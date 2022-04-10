@@ -1,5 +1,4 @@
-import { Router } from 'itty-router'
-
+import Router from './router'
 import lookup from './src/handlers/lookup';
 import webhook from './src/handlers/webhook';
 
@@ -9,6 +8,7 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
   const r = new Router();
+  r.get('/', () => new Response("Hello, world! This is the root page of your Worker template."))
   r.post('/lookup', lookup);
   r.post('/webhook', webhook);
 
