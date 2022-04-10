@@ -2,8 +2,7 @@ import qs from 'qs';
 import { constructGhIssueSlackMessage } from '../utils/slack';
 
 
-const ghIssueRegex = /(?<owner>\w*)\/(?<repo>\w*)\#(?<issue_number>\d*)/
-
+const ghIssueRegex = /(?<owner>\w*)\/(?<repo>\w*)\#(?<issue_number>\d*)/;
 const parseGhIssueString = text => {
   const match = text.match(ghIssueRegex);
   return match ? match.groups : null;
@@ -17,13 +16,11 @@ const fetchGitHubIssue = (owner, repo, issue_number) => {
 
 
 export default async request => {
-  let body, params, text, parsed;
   try {
-    body = await request.text();
-    params = qs.parse(body);
-    text = params['text'].trim();
-    // TODO fix { owner, repo, issue_number } = parseGhIssueString(text);
-    const [owner, repo, issue_number] = ['sliponit', 'slack-bot-worker', 1]
+    const body = await request.text();
+    const params = qs.parse(body);
+    const text = params['text'].trim();
+    const { owner, repo, issue_number } = parseGhIssueString(text);
 
     const response = await fetchGitHubIssue(owner, repo, issue_number);
     const issue = await response.json();
@@ -40,6 +37,6 @@ export default async request => {
   } catch (err) {
     const errorText =
       'Uh-oh! We could not find the issue you provided. We can only find public issues in the following format: `owner/repo#issue_number`.';
-    return new Response(JSON.stringify({ body, params, text, parsed }));
+    return new Response(errorText);
   }
 };
